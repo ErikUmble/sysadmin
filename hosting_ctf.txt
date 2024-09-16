@@ -1,0 +1,7 @@
+host challenge binary using redpwn/jail docker image
+- start with quickstart Dockerfile here: https://github.com/redpwn/jail/
+docker run -p 1234:5000 --privileged $(docker build -q .)  # replace 1234 with desired outward facing port
+
+see here for alternative challenge host: https://medium.com/techloop/ctf-challenges-dockerizing-and-repository-structure-bd3aed9314de
+
+see here for directory structure idea: https://medium.com/csictf/structuring-your-repository-for-ctf-challenges-9351fd47b09a
