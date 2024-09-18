@@ -2,6 +2,8 @@
 
 This guide explains how to generate multiple SSH keys for different GitHub repositories and configure them for remote access using SSH. The best way to gain access to a repository on a remote server in general is to use a deploy key which can be configured for read or read + write access to the repository. GitHub requires that each ssh key be used for at most one deploy key, so it is necessary to create a separate ssh key for each repository that needs to be accessed.
 
+[source](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys)
+
 ## 1. Generate SSH Keys for Each Repository
 
 To generate separate SSH keys for each repository, use the `ssh-keygen` command and provide a unique name for each key.

@@ -1,0 +1,78 @@
+version: '2'
+
+services:
+  ctfd:
+    build: .
+    user: root
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - UPLOAD_FOLDER=/var/uploads
+      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db/${MYSQL_DATABASE}                                                                              
+      - REDIS_URL=redis://cache:6379                                                                                                
+      - WORKERS=4
+      - LOG_FOLDER=/var/log/CTFd
+      - ACCESS_LOG=-
+      - ERROR_LOG=-                                                                                                                 
+      - REVERSE_PROXY=true
+    volumes:
+      - .data/CTFd/logs:/var/log/CTFd
+      - .data/CTFd/uploads:/var/uploads                                                                                             
+      - .:/opt/CTFd:ro
+    depends_on:
+      - db
+      - cache
+    networks:                                                                                                                         
+      default:
+      internal:
+
+  certbot:                                                                                                                            
+    image: certbot/certbot                                                                                                        
+    volumes:                                                                                                                        
+    - ./data/certbot/conf:/etc/letsencrypt                                                                                        
+    - ./data/certbot/www:/var/www/certbot                                                                                           
+    #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+                                                                                                                                                                                                                                                                                     
+  nginx:
+    image: nginx:stable                                                                                                           
+    restart: always                                                                                                               
+    volumes:                                                                                                                        
+    - ./conf/nginx/http.conf:/etc/nginx/nginx.conf                                                                                
+    - ./data/certbot/www:/var/www/certbot                                                                                         
+    - ./data/certbot/conf:/etc/letsencrypt                                                                                      
+    ports:                                                                                                                          
+    - 80:80                                                                                                                       
+    - 443:443                                                                                                                   
+    depends_on:                                                                                                                     
+    - ctfd                                                                                                                      
+    networks:                                                                                                                       
+    - default         
+  
+  db:
+    image: mariadb:10.4.12
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - .data/mysql:/var/lib/mysql
+    networks:
+        internal:
+    # This command is required to set important mariadb defaults
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]      
+  
+  cache:
+    image: redis:4
+    restart: always
+    volumes:
+    - .data/redis:/data
+    networks:
+        internal:
+
+networks:
+    default:
+    internal:
+        internal: true

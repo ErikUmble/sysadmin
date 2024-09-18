@@ -1,0 +1,13 @@
+Each web challenge gets it's own subdomain, docker container(s), and docker network.
+Convention: network name is subdomain_net replacing . with _ (for reactor.rpis.ec network is reactor_net and for admin.reactor.rpis.ec network is admin_reactor_net)
+container name is the same but with _chall instead of _net
+
+/home/reverse-proxy contains the docker-compose for the nginx reverse proxy
+
+To host a web challenge:
+- Add a docker-compose.yml within the challenge's directory (can be a basic nginx if static web chall)
+    - Make sure the primary service has the `reverse_proxy_net` network enabled, as this is the network shared by proxy service
+    - I decided to make web challs based off of a compose instead of Dockerfile to make it easier to add database or other services
+- Add `include: path/to/chall/docker-compose.yml` to reverse-proxy/docker-compose.yml
+- Update the reverse-proxy nginx conf file to proxy the subdomain to the port 80 of that container specified in the challenge config yml
+- Create a new A-name dns record for the subdomain, pointing to the challenge server
