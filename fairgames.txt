@@ -1,5 +1,7 @@
 within the /home/ctfd directory
-docker compose up
+docker-compose up
 
 while the docker is up and ready, run this to get or renew cert
-docker compose run --rm certbot certonly --webroot -w /var/www/certbot -d fairgame.rpis.ec
+docker-compose run --rm certbot certonly --webroot -w /var/www/certbot -d fairgame.rpis.ec
+
+then, either move the cert files into the container, or simply rebuild the ctfd container of the compose
