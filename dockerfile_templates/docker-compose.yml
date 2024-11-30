@@ -1,0 +1,18 @@
+services:
+  chall_name:
+    build:
+      context: ./path/to/chall_name/
+      dockerfile: Dockerfile
+    container_name: chall_name         # Keep same as service name for consistency
+    ports:
+      - "5001:5000"                    # Format outside_port:5000 (inside port is always 5000 for redpwn/jail container)
+    privileged: true
+
+  other_chall:
+    build:
+      context: ./path/to/other_chall/
+      dockerfile: Dockerfile
+    container_name: other_chall
+    ports:
+      - "5002:5000"                    # Different outer port to avoid conflict
+    privileged: true

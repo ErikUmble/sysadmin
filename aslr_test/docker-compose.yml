@@ -1,0 +1,9 @@
+services:
+  aslr_test:
+    build: .
+    cap_add:
+      - SYS_ADMIN
+    container_name: aslr_test
+    ports:
+      - "5000:5000" 
+    privileged: true
